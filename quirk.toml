@@ -1,0 +1,8 @@
+name          = "test"
+version       = "1.0.0"
+license       = "MIT"
+description   = "Lightweight test runner with assertion helpers. Workflow: build a List of `TestCase`s, hand it to `test.run_all(...)`. Each test is a `(name, lambda)` pair. The runner executes every case, prints a pa"
+repository    = "github.com/AlexVachon/quirk-test"
+quirk-version = ">=1.4.0"
+
+[deps]
