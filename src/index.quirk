@@ -1,33 +1,26 @@
 ---
-Lightweight test runner with assertion helpers.
+Assertions and test cases for `quirk test`.
 
-Workflow: build a List of `TestCase`s, hand it to `test.run_all(...)`. Each
-test is a `(name, lambda)` pair. The runner executes every case, prints a
-pass/fail mark, and returns the failure count (so CI can detect breakage
-via the exit status).
-
-Assertions throw `AssertionError` on failure with a descriptive message;
-the runner catches and reports.
+In a `*_test.qk` file, every `define test_*()` that takes no arguments is a
+test: `quirk test` runs each one on its own and reports it, so one failure
+doesn't stop the rest. Optional `setup()` / `teardown()` functions run
+around every test. The assertions throw `AssertionError` with a message
+saying what differed.
 
 @example
 use test
-type TestCase = test.TestCase
 
-define main() -> void {
-    a := TestCase("addition",   fn() { test.assert_eq(2 + 2, 4) })
-    b := TestCase("string cat", fn() { test.assert_eq("a" + "b", "ab") })
-    test.run_all([a, b])
+define test_addition() -> void {
+    test.assert_eq(2 + 2, 4)
 }
 
-Note on naming: the runner is `run_all` (not `run`) to avoid colliding with
-`sys.run(command: String) -> Int`, which Sema otherwise merges with this
-signature.
+define test_parse_rejects_text() -> void {
+    test.assert_throws(fn() { Int.parse("x") }, "ValueError")
+}
 
-Note on Quirk quirks worked around in this library:
-  - String-defaulted parameters emit a stray byte when the call site goes
-    through a Callable lambda — so `msg` arguments are required, not optional.
-  - `c.body()` directly on a struct field also emits the stray byte; we copy
-    `body := c.body` first, then call `body()`.
+To run cases from your own `main()` instead, build a List of `TestCase`s
+and pass it to `test.run_all(...)`, which prints a pass/fail mark per case
+and returns the failure count.
 ---
 from typing.primitives.string use { String }
 from typing.collections.list use { List }
